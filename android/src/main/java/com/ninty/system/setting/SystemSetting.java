@@ -15,6 +15,11 @@ import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.WindowManager;
+import android.os.PowerManager;
+import android.os.BatteryManager;
+import static android.os.BatteryManager.BATTERY_STATUS_CHARGING;
+import static android.os.BatteryManager.BATTERY_STATUS_FULL;
+import static android.provider.Settings.Secure.getString;
 
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
@@ -41,6 +46,9 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     private static final String VOL_MUSIC = "music";
     private static final String VOL_ALARM = "alarm";
     private static final String VOL_NOTIFICATION = "notification";
+    private static String BATTERY_STATE = "batteryState";
+    private static String BATTERY_LEVEL= "batteryLevel";
+  private static String LOW_POWER_MODE = "lowPowerMode";
 
     private ReactApplicationContext mContext;
     private AudioManager am;
