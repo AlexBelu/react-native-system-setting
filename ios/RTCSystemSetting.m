@@ -39,6 +39,7 @@
 
 -(instancetype)init{
     self = [super init];
+    [[UIDevice currentDevice] setBatteryMonitoringEnabled:YES];
     if(self){
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(volumeChanged:)
