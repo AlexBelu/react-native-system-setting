@@ -247,6 +247,39 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
 }
 #endif
 
+- (NSDictionary *) powerState {
+#if RCT_DEV && (!TARGET_IPHONE_SIMULATOR) && !TARGET_OS_TV
+    if ([UIDevice currentDevice].isBatteryMonitoringEnabled != true) {
+        RCTLogWarn(@"Battery monitoring is not enabled. "
+                   "You need to enable monitoring with `[UIDevice currentDevice].batteryMonitoringEnabled = TRUE`");
+    }
+#endif
+#if RCT_DEV && TARGET_IPHONE_SIMULATOR && !TARGET_OS_TV
+    if ([UIDevice currentDevice].batteryState == UIDeviceBatteryStateUnknown) {
+        RCTLogWarn(@"Battery state `unknown` and monitoring disabled, this is normal for simulators and tvOS.");
+    }
+#endif
+
+    return @{
+#if TARGET_OS_TV
+             @"batteryLevel": @1,
+             @"batteryState": @"full",
+#else
+             @"batteryLevel": @([UIDevice currentDevice].batteryLevel),
+             @"batteryState": [@[@"unknown", @"unplugged", @"charging", @"full"] objectAtIndex: [UIDevice currentDevice].batteryState],
+             @"lowPowerMode": @([NSProcessInfo processInfo].isLowPowerModeEnabled),
+#endif
+             };
+}
+
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getPowerStateSync) {
+    return self.powerState;
+}
+
+RCT_EXPORT_METHOD(getPowerState:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(self.powerState);
+}
 
 - (float) getBatteryLevel {
     return [self.powerState[@"batteryLevel"] floatValue];
