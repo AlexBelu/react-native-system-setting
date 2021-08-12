@@ -75,7 +75,7 @@ interface SystemSetting {
     callback: (airplaneModeEnabled: boolean) => void
   ) => Promise<EmitterSubscription | null>;
   removeListener: (listener?: EmitterSubscription) => void;
-  getBatteryLevel: () => Promise<void>;
+  getBatteryLevel: () => Promise<number>;
 }
 
 declare const systemSetting: SystemSetting;
