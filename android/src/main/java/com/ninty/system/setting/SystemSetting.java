@@ -597,4 +597,19 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
             }
         }
     }
+
+    @ReactMethod(isBlockingSynchronousMethod = true)
+       public double getBatteryLevelSync() {
+       Intent intent = getReactApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+       WritableMap powerState = getPowerStateFromIntent(intent);
+
+       if(powerState == null) {
+        return 0;
+      }
+
+    return powerState.getDouble(BATTERY_LEVEL);
+    }
+
+   @ReactMethod
+  public void getBatteryLevel(Promise p) { p.resolve(getBatteryLevelSync()); }
 }

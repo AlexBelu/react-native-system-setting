@@ -200,19 +200,19 @@ export default class SystemSetting {
     }
 
     static async openAppSystemSettings() {
-        switch(Platform.OS) {
+        switch (Platform.OS) {
             case 'ios': {
                 const settingsLink = 'app-settings:';
                 const supported = await Linking.canOpenURL(settingsLink)
                 if (supported) await Linking.openURL(settingsLink);
                 break;
             }
-            case 'android': 
+            case 'android':
                 await SystemSettingNative.openAppSystemSettings()
                 break;
             default:
                 throw new Error('unknown platform')
-                break;    
+                break;
         }
     }
 
@@ -261,11 +261,14 @@ export default class SystemSetting {
     }
 
     static listenEvent(complete) {
-        if(!complete) return
+        if (!complete) return
 
         const listener = eventEmitter.addListener('EventEnterForeground', () => {
             listener.remove()
             complete()
         })
+    }
+    static async getBatteryLevel() {
+        return await SystemSettingNative.getBatteryLevel()
     }
 }

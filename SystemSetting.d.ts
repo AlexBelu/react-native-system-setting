@@ -1,4 +1,4 @@
-export {};
+export { };
 
 interface EmitterSubscription {
   remove: () => void;
@@ -75,6 +75,7 @@ interface SystemSetting {
     callback: (airplaneModeEnabled: boolean) => void
   ) => Promise<EmitterSubscription | null>;
   removeListener: (listener?: EmitterSubscription) => void;
+  getBatteryLevel: () => Promise<void>;
 }
 
 declare const systemSetting: SystemSetting;

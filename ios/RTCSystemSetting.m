@@ -247,4 +247,18 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
 }
 #endif
 
+
+- (float) getBatteryLevel {
+    return [self.powerState[@"batteryLevel"] floatValue];
+}
+
+RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getBatteryLevelSync) {
+    return @(self.getBatteryLevel);
+}
+
+RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(@(self.getBatteryLevel));
+}
+
+
 @end
