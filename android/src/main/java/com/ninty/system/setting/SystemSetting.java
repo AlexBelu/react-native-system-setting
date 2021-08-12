@@ -598,7 +598,17 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         }
     }
 
-    @ReactMethod(isBlockingSynchronousMethod = true)
+    
+   @ReactMethod(isBlockingSynchronousMethod = true)
+      public WritableMap getPowerStateSync() {
+      Intent intent = getReactApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+      return getPowerStateFromIntent(intent);
+  }
+
+   @ReactMethod
+      public void getPowerState(Promise p) { p.resolve(getPowerStateSync()); }
+
+   @ReactMethod(isBlockingSynchronousMethod = true)
        public double getBatteryLevelSync() {
        Intent intent = getReactApplicationContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
        WritableMap powerState = getPowerStateFromIntent(intent);
@@ -612,4 +622,43 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
 
    @ReactMethod
   public void getBatteryLevel(Promise p) { p.resolve(getBatteryLevelSync()); }
+
+  
+  private WritableMap getPowerStateFromIntent (Intent intent) {
+    if(intent == null) {
+      return null;
+    }
+
+    int batteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+    int batteryScale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+    int isPlugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+    int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+
+    float batteryPercentage = batteryLevel / (float)batteryScale;
+
+    String batteryState = "unknown";
+
+    if(isPlugged == 0) {
+      batteryState = "unplugged";
+    } else if(status == BATTERY_STATUS_CHARGING) {
+      batteryState = "charging";
+    } else if(status == BATTERY_STATUS_FULL) {
+      batteryState = "full";
+    }
+
+    PowerManager powerManager = (PowerManager)getReactApplicationContext().getSystemService(Context.POWER_SERVICE);
+    boolean powerSaveMode = false;
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      powerSaveMode = powerManager.isPowerSaveMode();
+    }
+
+    WritableMap powerState = Arguments.createMap();
+    powerState.putString(BATTERY_STATE, batteryState);
+    powerState.putDouble(BATTERY_LEVEL, batteryPercentage);
+    powerState.putBoolean(LOW_POWER_MODE, powerSaveMode);
+
+    return powerState;
+  }
+
+
 }
