@@ -18,9 +18,7 @@ import static android.os.BatteryManager.BATTERY_STATUS_CHARGING;
 import static android.os.BatteryManager.BATTERY_STATUS_FULL;
 import static android.provider.Settings.Secure.getString;
 
-import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -33,7 +31,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * Created by ninty on 2017/5/29.
  */
 
-public class SystemSetting extends ReactContextBaseJavaModule implements  LifecycleEventListener {
+public class SystemSetting extends ReactContextBaseJavaModule {
 
     private String TAG = SystemSetting.class.getSimpleName();
 
