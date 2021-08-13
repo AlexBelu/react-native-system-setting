@@ -47,33 +47,7 @@ interface SystemSetting {
     callback: (volumeData: VolumeData) => void
   ) => EmitterSubscription;
   removeVolumeListener: (listener?: EmitterSubscription) => void;
-  isWifiEnabled: () => Promise<boolean>;
-  switchWifiSilence: (onComplete?: CompleteFunc) => void;
-  switchWifi: (onComplete?: CompleteFunc) => void;
-  isLocationEnabled: () => Promise<boolean>;
-  getLocationMode: () => Promise<number>;
-  switchLocation: (onComplete?: CompleteFunc) => void;
-  isBluetoothEnabled: () => Promise<boolean>;
-  switchBluetooth: (onComplete?: CompleteFunc) => void;
-  switchBluetoothSilence: (onComplete?: CompleteFunc) => void;
-  isAirplaneEnabled: () => Promise<boolean>;
-  switchAirplane: (onComplete?: CompleteFunc) => void;
   openAppSystemSettings: () => Promise<void>;
-  addBluetoothListener: (
-    callback: (bluetoothEnabled: boolean) => void
-  ) => Promise<EmitterSubscription>;
-  addWifiListener: (
-    callback: (wifiEnabled: boolean) => void
-  ) => Promise<EmitterSubscription | null>;
-  addLocationListener: (
-    callback: (locationEnabled: boolean) => void
-  ) => Promise<EmitterSubscription | null>;
-  addLocationModeListener: (
-    callback: (locationMode: number) => void
-  ) => Promise<EmitterSubscription | null>;
-  addAirplaneListener: (
-    callback: (airplaneModeEnabled: boolean) => void
-  ) => Promise<EmitterSubscription | null>;
   removeListener: (listener?: EmitterSubscription) => void;
   getBatteryLevel: () => Promise<number>;
 }

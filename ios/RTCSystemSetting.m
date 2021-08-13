@@ -8,33 +8,22 @@
 
 #import "RTCSystemSetting.h"
 #import <SystemConfiguration/CaptiveNetwork.h>
-#import <CoreLocation/CoreLocation.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #import <ifaddrs.h>
 #import <net/if.h>
 
-#ifdef BLUETOOTH
-#import <CoreBluetooth/CoreBluetooth.h>
-#endif
 
 @import UIKit;
 @import MediaPlayer;
 
 @interface RCTSystemSetting()
-#ifdef BLUETOOTH
-<CBCentralManagerDelegate>
-#endif
 @end
 
 @implementation RCTSystemSetting {
     bool hasListeners;
     long skipSetVolumeCount;
-#ifdef BLUETOOTH
-    CBCentralManager *cb;
-#endif
-    NSDictionary *setting;
+
     MPVolumeView *volumeView;
-    UISlider *volumeSlider;
 }
 
 -(instancetype)init{
@@ -45,9 +34,6 @@
                                                  selector:@selector(volumeChanged:)
                                                      name:@"AVSystemController_SystemVolumeDidChangeNotification"
                                                    object:nil];
-#ifdef BLUETOOTH
-        cb = [[CBCentralManager alloc] initWithDelegate:nil queue:nil options:@{CBCentralManagerOptionShowPowerAlertKey: @NO}];
-#endif
     }
 
     [self initVolumeView];
@@ -73,11 +59,6 @@
 #ifdef PRIVATE_API
 -(void)initSetting{
     BOOL newSys = [UIDevice currentDevice].systemVersion.doubleValue >= 10.0;
-    setting = @{@"wifi": (newSys?@"App-Prefs:root=WIFI" : @"prefs:root=WIFI"),
-                @"location": (newSys?@"App-Prefs:root=Privacy&path=LOCATION" : @"prefs:root=Privacy&path=LOCATION"),
-                @"bluetooth": (newSys?@"App-Prefs:root=Bluetooth" : @"prefs:root=Bluetooth"),
-                @"airplane": (newSys?@"App-Prefs:root=AIRPLANE_MODE" : @"prefs:root=AIRPLANE_MODE")
-                };
 }
 #endif
 
@@ -111,46 +92,6 @@ RCT_EXPORT_METHOD(getVolume:(NSString *)type resolve:(RCTPromiseResolveBlock)res
     dispatch_sync(dispatch_get_main_queue(), ^{
         resolve([NSNumber numberWithFloat:[volumeSlider value]]);
     });
-}
-
-RCT_EXPORT_METHOD(switchWifi){
-    [self openSetting:@"wifi"];
-}
-
-RCT_EXPORT_METHOD(isWifiEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    resolve([NSNumber numberWithBool:[self isWifiEnabled]]);
-}
-
-RCT_EXPORT_METHOD(switchLocation){
-    [self openSetting:@"location"];
-}
-
-RCT_EXPORT_METHOD(isLocationEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    resolve([NSNumber numberWithBool:[CLLocationManager locationServicesEnabled]]);
-}
-
-RCT_EXPORT_METHOD(switchBluetooth){
-    [self openSetting:@"bluetooth"];
-}
-
-RCT_EXPORT_METHOD(isBluetoothEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-#ifdef BLUETOOTH
-    bool isEnabled = cb.state == CBManagerStatePoweredOn;
-    resolve([NSNumber numberWithBool:isEnabled]);
-#else
-    NSLog(@"You need add BLUETOOTH in preprocess macros, see https://github.com/c19354837/react-native-system-setting/blob/master/iOS.md");
-    resolve([NSNumber numberWithBool:NO]);
-#endif
-}
-
-RCT_EXPORT_METHOD(switchAirplane){
-    [self openSetting:@"airplane"];
-}
-
-RCT_EXPORT_METHOD(isAirplaneEnabled:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
-    NSString * radio = [[CTTelephonyNetworkInfo alloc] init].currentRadioAccessTechnology;
-    bool isEnabled = radio == nil;
-    resolve([NSNumber numberWithBool:isEnabled]);
 }
 
 RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
@@ -187,19 +128,6 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
 #endif
 }
 
--(BOOL)isWifiEnabled{
-    NSCountedSet * cset = [NSCountedSet new];
-    struct ifaddrs *interfaces;
-    if( ! getifaddrs(&interfaces) ) {
-        for( struct ifaddrs *interface = interfaces; interface; interface = interface->ifa_next)
-        {
-            if ( (interface->ifa_flags & IFF_UP) == IFF_UP ) {
-                [cset addObject:[NSString stringWithUTF8String:interface->ifa_name]];
-            }
-        }
-    }
-    return [cset countForObject:@"awdl0"] > 1 ? YES : NO;
-}
 
 -(void)applicationWakeUp:(NSNotification*)notification{
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
@@ -228,25 +156,6 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
         skipSetVolumeCount--;
     }
 }
-
-#ifdef BLUETOOTH
--(void)centralManagerDidUpdateState:(CBCentralManager *)central{
-    switch (central.state) {
-        case CBManagerStatePoweredOff:
-            if(hasListeners){
-                [self sendEventWithName:@"EventBluetoothChange" body:@NO];
-            }
-            break;
-        case CBManagerStatePoweredOn:
-            if(hasListeners){
-                [self sendEventWithName:@"EventBluetoothChange" body:@YES];
-            }
-            break;
-        default:
-            break;
-    }
-}
-#endif
 
 - (NSDictionary *) powerState {
 #if RCT_DEV && (!TARGET_IPHONE_SIMULATOR) && !TARGET_OS_TV

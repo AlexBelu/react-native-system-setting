@@ -2,15 +2,12 @@ package com.ninty.system.setting;
 
 import android.app.Activity;
 import android.app.NotificationManager;
-import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.location.LocationManager;
 import android.media.AudioManager;
 import android.net.Uri;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.util.Log;
@@ -52,13 +49,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
 
     private ReactApplicationContext mContext;
     private AudioManager am;
-    private WifiManager wm;
-    private LocationManager lm;
     private VolumeBroadcastReceiver volumeBR;
-    private volatile BroadcastReceiver wifiBR;
-    private volatile BroadcastReceiver bluetoothBR;
-    private volatile BroadcastReceiver locationBR;
-    private volatile BroadcastReceiver locationModeBR;
     private volatile BroadcastReceiver airplaneBR;
 
     public SystemSetting(ReactApplicationContext reactContext) {
@@ -66,8 +57,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         mContext = reactContext;
         reactContext.addLifecycleEventListener(this);
         am = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-        wm = (WifiManager) mContext.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        lm = (LocationManager) mContext.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
 
         volumeBR = new VolumeBroadcastReceiver();
     }
@@ -87,124 +76,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         }
     }
 
-    private void listenWifiState() {
-        if (wifiBR == null) {
-            synchronized (this) {
-                if (wifiBR == null) {
-                    wifiBR = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (intent.getAction().equals(WifiManager.WIFI_STATE_CHANGED_ACTION)) {
-                                int wifiState = intent.getIntExtra(WifiManager.EXTRA_WIFI_STATE, 0);
-                                if (wifiState == WifiManager.WIFI_STATE_ENABLED || wifiState == WifiManager.WIFI_STATE_DISABLED) {
-                                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit("EventWifiChange", wifiState == WifiManager.WIFI_STATE_ENABLED);
-                                }
-                            }
-                        }
-                    };
-                    IntentFilter wifiFilter = new IntentFilter();
-                    wifiFilter.addAction(WifiManager.WIFI_STATE_CHANGED_ACTION);
-
-                    mContext.registerReceiver(wifiBR, wifiFilter);
-                }
-            }
-        }
-    }
-
-    private void listenBluetoothState() {
-        if (bluetoothBR == null) {
-            synchronized (this) {
-                if (bluetoothBR == null) {
-                    bluetoothBR = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
-                                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, 0);
-                                if (state == BluetoothAdapter.STATE_ON || state == BluetoothAdapter.STATE_OFF) {
-                                    mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                            .emit("EventBluetoothChange", state == BluetoothAdapter.STATE_ON);
-                                }
-                            }
-                        }
-                    };
-                    IntentFilter bluetoothFilter = new IntentFilter();
-                    bluetoothFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
-
-                    mContext.registerReceiver(bluetoothBR, bluetoothFilter);
-                }
-            }
-        }
-    }
-
-    private void listenLocationState() {
-        if (locationBR == null) {
-            synchronized (this) {
-                if (locationBR == null) {
-                    locationBR = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (intent.getAction().equals(LocationManager.PROVIDERS_CHANGED_ACTION)) {
-                                mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit("EventLocationChange", isLocationEnable());
-                            }
-                        }
-                    };
-                    IntentFilter locationFilter = new IntentFilter();
-                    locationFilter.addAction(LocationManager.PROVIDERS_CHANGED_ACTION);
-
-                    mContext.registerReceiver(locationBR, locationFilter);
-                }
-            }
-        }
-    }
-
-    private void listenLocationModeState() {
-        if (locationModeBR == null) {
-            synchronized (this) {
-                if (locationModeBR == null) {
-                    locationModeBR = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            if (intent.getAction().equals(LocationManager.MODE_CHANGED_ACTION)) {
-                                mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit("EventLocationModeChange", getLocationMode());
-                            }
-                        }
-                    };
-                    IntentFilter locationFilter = new IntentFilter();
-                    locationFilter.addAction(LocationManager.MODE_CHANGED_ACTION);
-
-                    mContext.registerReceiver(locationModeBR, locationFilter);
-                }
-            }
-        }
-    }
-
-    private void listenAirplaneState() {
-        if (airplaneBR == null) {
-            synchronized (this) {
-                if (airplaneBR == null) {
-                    airplaneBR = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            try {
-                                int val = Settings.System.getInt(mContext.getContentResolver(), Settings.System.AIRPLANE_MODE_ON);
-                                mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                                        .emit("EventAirplaneChange", val == 1);
-                            } catch (Settings.SettingNotFoundException e) {
-                                Log.e(TAG, "err", e);
-                            }
-                        }
-                    };
-                    IntentFilter locationFilter = new IntentFilter();
-                    locationFilter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
-
-                    mContext.registerReceiver(airplaneBR, locationFilter);
-                }
-            }
-        }
-    }
 
     @Override
     public String getName() {
@@ -373,146 +244,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     }
 
     @ReactMethod
-    public void isWifiEnabled(Promise promise) {
-        if (wm != null) {
-            promise.resolve(wm.isWifiEnabled());
-        } else {
-            promise.reject("-1", "get wifi manager fail");
-        }
-    }
-
-    @ReactMethod
-    public void switchWifiSilence() {
-        if (wm != null) {
-            listenWifiState();
-            wm.setWifiEnabled(!wm.isWifiEnabled());
-        } else {
-            Log.w(TAG, "Cannot get wifi manager, switchWifi will be ignored");
-        }
-    }
-
-    @ReactMethod
-    public void switchWifi() {
-        switchSetting(SysSettings.WIFI);
-    }
-
-    @ReactMethod
-    public void isLocationEnabled(Promise promise) {
-        if (lm != null) {
-            promise.resolve(isLocationEnable());
-        } else {
-            promise.reject("-1", "get location manager fail");
-        }
-    }
-
-    @ReactMethod
-    public void getLocationMode(Promise promise) {
-        if (lm != null) {
-            promise.resolve(getLocationMode());
-        } else {
-            promise.reject("-1", "get location manager fail");
-        }
-    }
-
-    private int getLocationMode() {
-        int result = 0;
-        if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-            result |= 1;
-        }
-        if (lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            result |= 1 << 1;
-        }
-        return result;
-    }
-
-    private boolean isLocationEnable() {
-        return lm.isProviderEnabled(LocationManager.GPS_PROVIDER)
-                || lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
-
-    @ReactMethod
-    public void switchLocation() {
-        switchSetting(SysSettings.LOCATION);
-    }
-
-    @ReactMethod
-    public void isBluetoothEnabled(Promise promise) {
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        promise.resolve(bluetoothAdapter != null && bluetoothAdapter.isEnabled());
-    }
-
-    @ReactMethod
-    public void switchBluetooth() {
-        switchSetting(SysSettings.BLUETOOTH);
-    }
-
-    @ReactMethod
-    public void switchBluetoothSilence() {
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (bluetoothAdapter != null) {
-            listenBluetoothState();
-            if (bluetoothAdapter.isEnabled()) {
-                bluetoothAdapter.disable();
-            } else {
-                bluetoothAdapter.enable();
-            }
-        }
-    }
-
-    @ReactMethod
-    public void activeListener(String type, Promise promise) {
-        switch (type) {
-            case "wifi":
-                listenWifiState();
-                promise.resolve(null);
-                return;
-            case "bluetooth":
-                listenBluetoothState();
-                promise.resolve(null);
-                return;
-            case "location":
-                listenLocationState();
-                promise.resolve(null);
-                return;
-            case "locationMode":
-                listenLocationModeState();
-                promise.resolve(null);
-                return;
-            case "airplane":
-                listenAirplaneState();
-                promise.resolve(null);
-                return;
-        }
-        promise.reject("-1", "unsupported listener type: " + type);
-    }
-
-    @ReactMethod
-    public void isAirplaneEnabled(Promise promise) {
-        try {
-            int val = Settings.System.getInt(mContext.getContentResolver(), Settings.System.AIRPLANE_MODE_ON);
-            promise.resolve(val == 1);
-        } catch (Settings.SettingNotFoundException e) {
-            Log.e(TAG, "err", e);
-            promise.reject("-1", "get airplane mode fail", e);
-        }
-    }
-
-    @ReactMethod
-    public void switchAirplane() {
-        switchSetting(SysSettings.AIRPLANE);
-    }
-
-    private void switchSetting(SysSettings setting) {
-        if (mContext.getCurrentActivity() != null) {
-            mContext.addActivityEventListener(this);
-            Intent intent = new Intent(setting.action);
-            mContext.getCurrentActivity().startActivityForResult(intent, setting.requestCode);
-        } else {
-            Log.w(TAG, "getCurrentActivity() return null, switch will be ignore");
-        }
-    }
-
-    @ReactMethod
     public void openAppSystemSettings() {
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -546,30 +277,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     @Override
     public void onHostPause() {
         unregisterVolumeReceiver();
-    }
-
-    @Override
-    public void onHostDestroy() {
-        if (wifiBR != null) {
-            mContext.unregisterReceiver(wifiBR);
-            wifiBR = null;
-        }
-        if (bluetoothBR != null) {
-            mContext.unregisterReceiver(bluetoothBR);
-            bluetoothBR = null;
-        }
-        if (locationBR != null) {
-            mContext.unregisterReceiver(locationBR);
-            locationBR = null;
-        }
-        if (locationModeBR != null) {
-            mContext.unregisterReceiver(locationModeBR);
-            locationBR = null;
-        }
-        if (airplaneBR != null) {
-            mContext.unregisterReceiver(airplaneBR);
-            airplaneBR = null;
-        }
     }
 
     private class VolumeBroadcastReceiver extends BroadcastReceiver {

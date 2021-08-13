@@ -136,68 +136,6 @@ export default class SystemSetting {
         listener && listener.remove()
     }
 
-    static async isWifiEnabled() {
-        const result = await SystemSettingNative.isWifiEnabled()
-        return (result) > 0
-    }
-
-    static switchWifiSilence(complete) {
-        if (Utils.isAndroid) {
-            SystemSetting.listenEvent(complete)
-            SystemSettingNative.switchWifiSilence()
-        } else {
-            SystemSetting.switchWifi(complete)
-        }
-    }
-
-    static switchWifi(complete) {
-        SystemSetting.listenEvent(complete)
-        SystemSettingNative.switchWifi()
-    }
-
-    static async isLocationEnabled() {
-        return await SystemSettingNative.isLocationEnabled()
-    }
-
-    static async getLocationMode() {
-        if (Utils.isAndroid) {
-            return await SystemSettingNative.getLocationMode()
-        } else {
-            return await SystemSetting.isLocationEnabled() ? 1 : 0
-        }
-    }
-
-    static switchLocation(complete) {
-        SystemSetting.listenEvent(complete)
-        SystemSettingNative.switchLocation()
-    }
-
-    static async isBluetoothEnabled() {
-        return await SystemSettingNative.isBluetoothEnabled()
-    }
-
-    static switchBluetooth(complete) {
-        SystemSetting.listenEvent(complete)
-        SystemSettingNative.switchBluetooth()
-    }
-
-    static switchBluetoothSilence(complete) {
-        if (Utils.isAndroid) {
-            SystemSetting.listenEvent(complete)
-            SystemSettingNative.switchBluetoothSilence()
-        } else {
-            SystemSettingNative.switchBluetooth(complete)
-        }
-    }
-
-    static async isAirplaneEnabled() {
-        return await SystemSettingNative.isAirplaneEnabled()
-    }
-
-    static switchAirplane(complete) {
-        SystemSetting.listenEvent(complete)
-        SystemSettingNative.switchAirplane()
-    }
 
     static async openAppSystemSettings() {
         switch (Platform.OS) {
@@ -214,26 +152,6 @@ export default class SystemSetting {
                 throw new Error('unknown platform')
                 break;
         }
-    }
-
-    static async addBluetoothListener(callback) {
-        return await SystemSetting._addListener(false, 'bluetooth', 'EventBluetoothChange', callback)
-    }
-
-    static async addWifiListener(callback) {
-        return await SystemSetting._addListener(true, 'wifi', 'EventWifiChange', callback)
-    }
-
-    static async addLocationListener(callback) {
-        return await SystemSetting._addListener(true, 'location', 'EventLocationChange', callback)
-    }
-
-    static async addLocationModeListener(callback) {
-        return await SystemSetting._addListener(true, 'locationMode', 'EventLocationModeChange', callback)
-    }
-
-    static async addAirplaneListener(callback) {
-        return await SystemSetting._addListener(true, 'airplane', 'EventAirplaneChange', callback)
     }
 
     static async _addListener(androidOnly, type, eventName, callback) {
