@@ -53,7 +53,6 @@ public class SystemSetting extends ReactContextBaseJavaModule {
     public SystemSetting(ReactApplicationContext reactContext) {
         super(reactContext);
         mContext = reactContext;
-        reactContext.addLifecycleEventListener(this);
         am = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         volumeBR = new VolumeBroadcastReceiver();
