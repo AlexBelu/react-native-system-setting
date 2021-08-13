@@ -23,7 +23,9 @@
     bool hasListeners;
     long skipSetVolumeCount;
 
+     NSDictionary *setting;
     MPVolumeView *volumeView;
+    UISlider *volumeSlider;
 }
 
 -(instancetype)init{
