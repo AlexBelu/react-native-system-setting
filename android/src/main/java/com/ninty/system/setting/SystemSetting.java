@@ -18,7 +18,9 @@ import static android.os.BatteryManager.BATTERY_STATUS_CHARGING;
 import static android.os.BatteryManager.BATTERY_STATUS_FULL;
 import static android.provider.Settings.Secure.getString;
 
+import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
@@ -31,7 +33,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
  * Created by ninty on 2017/5/29.
  */
 
-public class SystemSetting extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener{
+public class SystemSetting extends ReactContextBaseJavaModule implements ActivityEventListener, LifecycleEventListener {
 
     private String TAG = SystemSetting.class.getSimpleName();
 
@@ -53,6 +55,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     public SystemSetting(ReactApplicationContext reactContext) {
         super(reactContext);
         mContext = reactContext;
+        reactContext.addLifecycleEventListener(this);
         am = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         volumeBR = new VolumeBroadcastReceiver();
@@ -258,6 +261,10 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     @Override
     public void onHostPause() {
         unregisterVolumeReceiver();
+    }
+
+    @Override
+    public void onHostDestroy() {
     }
 
     private class VolumeBroadcastReceiver extends BroadcastReceiver {
