@@ -9,7 +9,7 @@ import android.provider.Settings;
 public enum SysSettings {
 
     UNKNOW("", 0),
-    WRITESETTINGS(Settings.ACTION_MANAGE_WRITE_SETTINGS, 4),
+    WRITESETTINGS(Settings.ACTION_MANAGE_WRITE_SETTINGS, 4);
 
     public String action;
     public int requestCode;
