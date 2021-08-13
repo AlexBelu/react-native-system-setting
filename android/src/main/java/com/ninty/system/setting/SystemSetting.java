@@ -45,7 +45,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     private static final String VOL_NOTIFICATION = "notification";
     private static String BATTERY_STATE = "batteryState";
     private static String BATTERY_LEVEL= "batteryLevel";
-  private static String LOW_POWER_MODE = "lowPowerMode";
+    private static String LOW_POWER_MODE = "lowPowerMode";
 
     private ReactApplicationContext mContext;
     private AudioManager am;
@@ -139,12 +139,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
             Log.e(TAG, "err", e);
             promise.reject("-1", "get app's brightness fail", e);
         }
-    }
-
-    @ReactMethod
-    public void openWriteSetting() {
-        Intent intent = new Intent(SysSettings.WRITESETTINGS.action, Uri.parse("package:" + mContext.getPackageName()));
-        mContext.getCurrentActivity().startActivity(intent);
     }
 
     @ReactMethod
@@ -251,16 +245,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         intent.setData(Uri.parse("package:" + mContext.getPackageName()));
         if (intent.resolveActivity(mContext.getPackageManager()) != null) {
             mContext.startActivity(intent);
-        }
-    }
-
-    @Override
-    public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-        SysSettings setting = SysSettings.get(requestCode);
-        if (setting != SysSettings.UNKNOW) {
-            mContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("EventEnterForeground", null);
-            mContext.removeActivityEventListener(this);
         }
     }
 
