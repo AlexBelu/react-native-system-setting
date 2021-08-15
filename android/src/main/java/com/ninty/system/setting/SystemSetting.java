@@ -321,7 +321,6 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
             mLastBatteryLevel = batteryLevel;
         }
         }
-        }
     }
 
     
@@ -389,6 +388,13 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
 
     return powerState;
   }
-
+ 
+  private void sendEvent(ReactContext reactContext,
+                         String eventName,
+                         @Nullable Object data) {
+    reactContext
+            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+            .emit(eventName, data);
+  }
 
 }
