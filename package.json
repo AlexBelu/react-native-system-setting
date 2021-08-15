@@ -31,5 +31,9 @@
         "type": "git",
         "url": "https://github.com/c19354837/react-native-system-setting.git"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "devDependencies": {
+        "@types/react": "^17.0.18",
+        "@types/react-native": "^0.64.13"
+    }
 }
