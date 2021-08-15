@@ -1,10 +1,10 @@
 import { NativeModules, NativeEventEmitter, Linking, Platform } from 'react-native'
+import {useBatteryLevel} from './index'
 
 import Utils from './Utils'
 
 const SystemSettingNative = NativeModules.SystemSetting
 
-const SCREEN_BRIGHTNESS_MODE_UNKNOW = -1
 const SCREEN_BRIGHTNESS_MODE_MANUAL = 0
 const SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1
 
@@ -189,4 +189,8 @@ export default class SystemSetting {
     static async getBatteryLevel() {
         return await SystemSettingNative.getBatteryLevel()
     }
+
+   static async useBatteryLevel() {
+       return  useBatteryLevel();
+   } 
 }

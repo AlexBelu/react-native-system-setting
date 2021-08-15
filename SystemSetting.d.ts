@@ -50,6 +50,7 @@ interface SystemSetting {
   openAppSystemSettings: () => Promise<void>;
   removeListener: (listener?: EmitterSubscription) => void;
   getBatteryLevel: () => Promise<number>;
+  useBatteryLevel: () => number | null,
 }
 
 declare const systemSetting: SystemSetting;

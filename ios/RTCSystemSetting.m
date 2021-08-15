@@ -36,6 +36,10 @@
                                                  selector:@selector(volumeChanged:)
                                                      name:@"AVSystemController_SystemVolumeDidChangeNotification"
                                                    object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(batteryLevelDidChange:)
+                                                     name:UIDeviceBatteryLevelDidChangeNotification
+                                                   object: nil];                                           
     }
 
     [self initVolumeView];
@@ -138,7 +142,7 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
 
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"EventVolume", @"EventEnterForeground", @"EventBluetoothChange"];
+    return @[@"EventVolume", @"EventEnterForeground", @"EventBluetoothChange", @"RNDeviceInfo_batteryLevelDidChange"];
 }
 
 -(void)startObserving {
@@ -205,5 +209,14 @@ RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
     resolve(@(self.getBatteryLevel));
 }
 
+
+- (void) batteryLevelDidChange:(NSNotification *)notification {
+    if (!hasListeners) {
+        return;
+    }
+
+    float batteryLevel = [self.powerState[@"batteryLevel"] floatValue];
+    [self sendEventWithName:@"RNDeviceInfo_batteryLevelDidChange" body:@(batteryLevel)];
+}
 
 @end

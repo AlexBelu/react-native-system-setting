@@ -47,6 +47,8 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     private static String BATTERY_LEVEL= "batteryLevel";
     private static String LOW_POWER_MODE = "lowPowerMode";
 
+    private double mLastBatteryLevel = -1;
+
     private ReactApplicationContext mContext;
     private AudioManager am;
     private VolumeBroadcastReceiver volumeBR;
@@ -304,6 +306,21 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
                     // This is here to avoid app crashing.
                 }
             }
+               WritableMap powerState = getPowerStateFromIntent(intent);
+
+        if(powerState == null) {
+          return;
+        }
+
+        String batteryState = powerState.getString(BATTERY_STATE);
+        Double batteryLevel = powerState.getDouble(BATTERY_LEVEL);
+        Boolean powerSaveState = powerState.getBoolean(LOW_POWER_MODE);
+
+        if(mLastBatteryLevel != batteryLevel) {
+            sendEvent(getReactApplicationContext(), "RNDeviceInfo_batteryLevelDidChange", batteryLevel); 
+            mLastBatteryLevel = batteryLevel;
+        }
+        }
         }
     }
 
