@@ -279,6 +279,25 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     public void onHostDestroy() {
     }
 
+@Override
+        public void onReceive(Context context, Intent intent) 
+{
+     WritableMap powerState = getPowerStateFromIntent(intent);
+
+        if(powerState == null) {
+          return;
+        }
+
+        String batteryState = powerState.getString(BATTERY_STATE);
+        Double batteryLevel = powerState.getDouble(BATTERY_LEVEL);
+        Boolean powerSaveState = powerState.getBoolean(LOW_POWER_MODE);
+
+        if(mLastBatteryLevel != batteryLevel) {
+            sendEvent(getReactApplicationContext(), "RNDeviceInfo_batteryLevelDidChange", batteryLevel); 
+            mLastBatteryLevel = batteryLevel;
+        }
+}
+
     private class VolumeBroadcastReceiver extends BroadcastReceiver {
 
         private boolean isRegistered = false;
@@ -310,20 +329,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
                     // This is here to avoid app crashing.
                 }
             }
-               WritableMap powerState = getPowerStateFromIntent(intent);
-
-        if(powerState == null) {
-          return;
-        }
-
-        String batteryState = powerState.getString(BATTERY_STATE);
-        Double batteryLevel = powerState.getDouble(BATTERY_LEVEL);
-        Boolean powerSaveState = powerState.getBoolean(LOW_POWER_MODE);
-
-        if(mLastBatteryLevel != batteryLevel) {
-            sendEvent(getReactApplicationContext(), "RNDeviceInfo_batteryLevelDidChange", batteryLevel); 
-            mLastBatteryLevel = batteryLevel;
-        }
+        
         }
     }
 
