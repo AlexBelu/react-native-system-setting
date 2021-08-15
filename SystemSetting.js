@@ -1,5 +1,5 @@
 import { NativeModules, NativeEventEmitter, Linking, Platform } from 'react-native'
-import {useBatteryLevel} from './index'
+import {useBatteryLevel} from './helpers'
 
 import Utils from './Utils'
 
