@@ -4,7 +4,7 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 
 const SystemSettingNative = NativeModules.SystemSetting
 
-const deviceInfoEmitter = new NativeEventEmitter(NativeModules.RNDeviceInfo);
+const deviceInfoEmitter = new NativeEventEmitter(NativeModules.SystemSetting);
 export function useBatteryLevel(): number | null {
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
 
