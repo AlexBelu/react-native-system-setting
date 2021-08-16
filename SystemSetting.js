@@ -192,8 +192,8 @@ export default class SystemSetting {
 
    static async useBatteryLevel() {
        const batteryLevel = useBatteryLevel();
-       console.log(useBatteryLevel());
-       console.log(batteryLevel);
+       console.log('prima',useBatteryLevel());
+       console.log('a doua',batteryLevel);
        return  batteryLevel;
    } 
 }
