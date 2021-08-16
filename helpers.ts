@@ -9,24 +9,21 @@ export function useBatteryLevel(): number | null {
   const [batteryLevel, setBatteryLevel] = useState<number | null>(null);
 
   useEffect(() => {
-    const setInitialValue = async () => {
-      const initialValue: number = await SystemSettingNative.getBatteryLevel();
-      setBatteryLevel(initialValue);
-    };
 
-    const onChange = (level: number) => {
-      setBatteryLevel(level);
+    async function setInitialValue (){
+       const initialValue: number = await SystemSettingNative.getBatteryLevel();
+       setBatteryLevel(initialValue);
     };
 
     setInitialValue();
 
     const subscription = deviceInfoEmitter.addListener(
       'RNDeviceInfo_batteryLevelDidChange',
-      onChange
+      (level: number)=>{setBatteryLevel(level)} 
     );
 
     return () => subscription.remove();
   }, []);
-
+  console.log(batteryLevel);
   return batteryLevel;
 }
