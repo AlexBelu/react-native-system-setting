@@ -191,6 +191,9 @@ export default class SystemSetting {
     }
 
    static async useBatteryLevel() {
-       return  useBatteryLevel();
+       const batteryLevel = useBatteryLevel();
+       console.log(useBatteryLevel());
+       console.log(batteryLevel);
+       return  batteryLevel;
    } 
 }
