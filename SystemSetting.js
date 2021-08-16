@@ -60,18 +60,7 @@ export default class SystemSetting {
             return SystemSetting.getBrightness()
         }
     }
-
-    /**
-     * @deprecated use grantWriteSettingPermission instead
-     */
-    static grantWriteSettingPremission() {
-        __DEV__ && console.warn('grantWriteSettingPremission has been renamed to grantWriteSettingPermission, see https://github.com/c19354837/react-native-system-setting/pull/98')
-        SystemSetting.grantWriteSettingPermission()
-    }
-
-    /**
-     * since v1.7.4
-     */
+    
     static grantWriteSettingPermission() {
         if (Utils.isAndroid) {
             SystemSettingNative.openWriteSetting()
@@ -192,8 +181,6 @@ export default class SystemSetting {
 
    static  useBatteryLevel() {
        const batteryLevel = useBatteryLevel();
-       console.log('prima',useBatteryLevel());
-       console.log('a doua',batteryLevel);
        return  batteryLevel;
    } 
 }

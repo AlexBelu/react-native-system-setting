@@ -56,6 +56,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     private ReactApplicationContext mContext;
     private AudioManager am;
     private VolumeBroadcastReceiver volumeBR;
+    private BroadcastReceiver receiver;
     private volatile BroadcastReceiver airplaneBR;
 
     public SystemSetting(ReactApplicationContext reactContext) {
@@ -65,6 +66,10 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         am = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
 
         volumeBR = new VolumeBroadcastReceiver();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(mContext)){
+            openWriteSetting();
+        }
     }
 
     private void registerVolumeReceiver() {
