@@ -190,7 +190,7 @@ export default class SystemSetting {
         return await SystemSettingNative.getBatteryLevel()
     }
 
-   static async useBatteryLevel() {
+   static  useBatteryLevel() {
        const batteryLevel = useBatteryLevel();
        console.log('prima',useBatteryLevel());
        console.log('a doua',batteryLevel);
