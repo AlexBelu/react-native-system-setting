@@ -68,7 +68,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         volumeBR = new VolumeBroadcastReceiver();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(mContext)){
-            openWriteSetting();
+            // openWriteSetting();
         }
     }
 
