@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.ContentObserver;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -64,12 +65,7 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
         mContext = reactContext;
         reactContext.addLifecycleEventListener(this);
         am = (AudioManager) mContext.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
-
         volumeBR = new VolumeBroadcastReceiver();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.System.canWrite(mContext)){
-            // openWriteSetting();
-        }
     }
 
     private void registerVolumeReceiver() {
@@ -285,15 +281,15 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     }
 
 
-  @Override
-  public void initialize() {
-    IntentFilter filter = new IntentFilter();
-    filter.addAction(Intent.ACTION_BATTERY_CHANGED);
-    filter.addAction(Intent.ACTION_POWER_CONNECTED);
-    filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      filter.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
-    }
+    @Override
+    public void initialize() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_BATTERY_CHANGED);
+        filter.addAction(Intent.ACTION_POWER_CONNECTED);
+        filter.addAction(Intent.ACTION_POWER_DISCONNECTED);
+           if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+               filter.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
+            }
 
     receiver = new BroadcastReceiver() {
       @Override
@@ -318,6 +314,18 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     };
 
     getReactApplicationContext().registerReceiver(receiver, filter);
+
+
+      ContentObserver contentObserver = new ContentObserver(new Handler()) {
+          @Override
+          public void onChange(boolean selfChange) {
+              int a = Settings.System.getInt(mContext.getContentResolver(), Settings.System.SCREEN_BRIGHTNESS, 0);
+               sendEvent(getReactApplicationContext(), "BrightnessLevelDidChange", a * 1.0f / 255);
+          }
+      };
+
+      mContext.getContentResolver().registerContentObserver(Settings.System.getUriFor(Settings.System.SCREEN_BRIGHTNESS),
+              false, contentObserver);
   }
     private class VolumeBroadcastReceiver extends BroadcastReceiver {
 
@@ -420,12 +428,12 @@ public class SystemSetting extends ReactContextBaseJavaModule implements Activit
     return powerState;
   }
  
-  private void sendEvent(ReactContext reactContext,
-                         String eventName,
-                         @Nullable Object data) {
-    reactContext
+     private void sendEvent(ReactContext reactContext,
+                            String eventName,
+                             @Nullable Object data) {
+      reactContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
             .emit(eventName, data);
-  }
+    }
 
 }

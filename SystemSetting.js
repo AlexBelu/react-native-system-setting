@@ -1,25 +1,17 @@
 import { NativeModules, NativeEventEmitter, Linking, Platform } from 'react-native'
-import {useBatteryLevel} from './helpers'
 
+import {useBatteryLevel, useBrightnessLevel} from './helpers'
 import Utils from './Utils'
-
-const SystemSettingNative = NativeModules.SystemSetting
 
 const SCREEN_BRIGHTNESS_MODE_MANUAL = 0
 const SCREEN_BRIGHTNESS_MODE_AUTOMATIC = 1
 
+const SystemSettingNative = NativeModules.SystemSetting
 const eventEmitter = new NativeEventEmitter(SystemSettingNative)
 
 export default class SystemSetting {
     static saveBrightnessVal = -1
     static saveScreenModeVal = SCREEN_BRIGHTNESS_MODE_AUTOMATIC
-
-    /**
-     * @deprecated
-     */
-    static setAppStore() {
-        console.warn("You don't need call setAppStore() anymore since V1.7.0")
-    }
 
     static async getBrightness() {
         return await SystemSettingNative.getBrightness()
@@ -125,7 +117,6 @@ export default class SystemSetting {
         listener && listener.remove()
     }
 
-
     static async openAppSystemSettings() {
         switch (Platform.OS) {
             case 'ios': {
@@ -139,7 +130,6 @@ export default class SystemSetting {
                 break;
             default:
                 throw new Error('unknown platform')
-                break;
         }
     }
 
@@ -175,6 +165,7 @@ export default class SystemSetting {
             complete()
         })
     }
+    
     static async getBatteryLevel() {
         return await SystemSettingNative.getBatteryLevel()
     }
@@ -183,4 +174,9 @@ export default class SystemSetting {
        const batteryLevel = useBatteryLevel();
        return  batteryLevel;
    } 
+
+   static  useBatteryLevel() {
+    const brightnessLevel = useBrightnessLevel();
+    return  brightnessLevel;
+} 
 }

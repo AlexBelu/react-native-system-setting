@@ -1,10 +1,7 @@
-export { };
-
 interface EmitterSubscription {
   remove: () => void;
 }
 
-type CompleteFunc = () => void
 
 type VolumeType =
   | "call"
@@ -19,7 +16,6 @@ interface VolumeConfig {
   playSound?: boolean;
   showUI?: boolean;
 }
-
 interface VolumeData {
   value: number;
   call?: number;
@@ -50,7 +46,8 @@ interface SystemSetting {
   openAppSystemSettings: () => Promise<void>;
   removeListener: (listener?: EmitterSubscription) => void;
   getBatteryLevel: () => Promise<number>;
-  useBatteryLevel: () => number | null,
+  useBatteryLevel: () => number | null;
+  useBrightnessLevel: () => number | null,
 }
 
 declare const systemSetting: SystemSetting;

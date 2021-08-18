@@ -12,7 +12,6 @@
 #import <ifaddrs.h>
 #import <net/if.h>
 
-
 @import UIKit;
 @import MediaPlayer;
 
@@ -23,7 +22,7 @@
     bool hasListeners;
     long skipSetVolumeCount;
 
-     NSDictionary *setting;
+    NSDictionary *setting;
     MPVolumeView *volumeView;
     UISlider *volumeSlider;
 }
@@ -208,7 +207,6 @@ RCT_EXPORT_BLOCKING_SYNCHRONOUS_METHOD(getBatteryLevelSync) {
 RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     resolve(@(self.getBatteryLevel));
 }
-
 
 - (void) batteryLevelDidChange:(NSNotification *)notification {
     if (!hasListeners) {
