@@ -145,7 +145,7 @@ RCT_EXPORT_METHOD(activeListener:(NSString *)type resolve:(RCTPromiseResolveBloc
 
 - (NSArray<NSString *> *)supportedEvents
 {
-    return @[@"EventVolume", @"EventEnterForeground", @"EventBluetoothChange", @"RNDeviceInfo_batteryLevelDidChange"];
+    return @[@"EventVolume", @"EventEnterForeground", @"EventBluetoothChange", @"RNDeviceInfo_batteryLevelDidChange", @"BrightnessLevelDidChange"];
 }
 
 -(void)startObserving {
@@ -226,7 +226,7 @@ RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
         return;
     }
 
-    float brightnessLevel = [NSNumber numberWithDouble:[UIScreen mainScreen].brightness];
+    float brightnessLevel = [[NSNumber numberWithDouble:[UIScreen mainScreen].brightness] floatValue];
     [self sendEventWithName:@"BrightnessLevelDidChange" body:@(brightnessLevel)];
 }
 
