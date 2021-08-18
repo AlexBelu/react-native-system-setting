@@ -23,6 +23,7 @@ export function useBatteryLevel(): number | null {
 
     return () => subscription.remove();
   }, []);
+  
   return batteryLevel;
 }
 

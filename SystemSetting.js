@@ -170,13 +170,13 @@ export default class SystemSetting {
         return await SystemSettingNative.getBatteryLevel()
     }
 
-   static  useBatteryLevel() {
-       const batteryLevel = useBatteryLevel();
-       return  batteryLevel;
+    static  useBatteryLevel() {
+        const batteryLevel = useBatteryLevel();
+        return  batteryLevel;
    } 
 
-   static  useBrightnessLevel() {
-    const brightnessLevel = useBrightnessLevel();
-    return  brightnessLevel;
+    static  useBrightnessLevel() {
+        const brightnessLevel = useBrightnessLevel();
+        return  brightnessLevel;
 } 
 }

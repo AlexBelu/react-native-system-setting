@@ -32,6 +32,7 @@ interface SystemSetting {
   setBrightnessForce: (val: number) => Promise<boolean>;
   getAppBrightness: () => Promise<number>;
   setAppBrightness: (val: number) => Promise<true>;
+  useBrightnessLevel: () => number | null;
   grantWriteSettingPremission: () => void;
   getScreenMode: () => Promise<number>;
   setScreenMode: (val: number) => Promise<boolean>;
@@ -47,7 +48,6 @@ interface SystemSetting {
   removeListener: (listener?: EmitterSubscription) => void;
   getBatteryLevel: () => Promise<number>;
   useBatteryLevel: () => number | null;
-  useBrightnessLevel: () => number | null,
 }
 
 declare const systemSetting: SystemSetting;
