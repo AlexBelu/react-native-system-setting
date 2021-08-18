@@ -38,7 +38,11 @@
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(batteryLevelDidChange:)
                                                      name:UIDeviceBatteryLevelDidChangeNotification
-                                                   object: nil];                                           
+                                                   object: nil];
+         [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(brightnessLevelDidChange:)
+                                                     name:UIScreenBrightnessDidChangeNotification
+                                                   object: nil];                                                                                      
     }
 
     [self initVolumeView];
@@ -215,6 +219,15 @@ RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTP
 
     float batteryLevel = [self.powerState[@"batteryLevel"] floatValue];
     [self sendEventWithName:@"RNDeviceInfo_batteryLevelDidChange" body:@(batteryLevel)];
+}
+
+- (void) brightnessLevelDidChange:(NSNotification *)notification {
+    if (!hasListeners) {
+        return;
+    }
+
+    float brightnessLevel = [NSNumber numberWithDouble:[UIScreen mainScreen].brightness];
+    [self sendEventWithName:@"BrightnessLevelDidChange" body:@(brightnessLevel)];
 }
 
 @end
