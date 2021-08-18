@@ -175,7 +175,7 @@ export default class SystemSetting {
        return  batteryLevel;
    } 
 
-   static  useBatteryLevel() {
+   static  useBrightnessLevel() {
     const brightnessLevel = useBrightnessLevel();
     return  brightnessLevel;
 } 
