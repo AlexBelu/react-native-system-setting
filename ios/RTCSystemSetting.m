@@ -82,7 +82,6 @@ RCT_EXPORT_METHOD(setBrightness:(float)val resolve:(RCTPromiseResolveBlock)resol
         [[UIScreen mainScreen] setBrightness:val];
         resolve([NSNumber numberWithBool:YES]);
     });
-    [self sendEventWithName:@"BrightnessLevelDidChange" body:@(val)];
 }
 
 RCT_EXPORT_METHOD(getBrightness:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
